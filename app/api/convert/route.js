@@ -12,13 +12,18 @@ export async function GET(request) {
   const customKey = url.searchParams.get('key') || null
   const history = url.searchParams.get('history') || 'false'
 
+  // Check if markdown is provided
   if (!markdown) {
     return new Response('No markdown provided', { status: 400 })
   }
 
+  console.log('Received markdown:', markdown); // Log markdown content for debugging
+
   try {
+    // Attempt to convert markdown to HTML
     const htmlContent = await convertMarkdownToHtml(markdown, css)
 
+    // Handle storing to history if requested
     if (history === 'true') {
       const { env } = getRequestContext()
       const kv = env.MY_KV_NAMESPACE
@@ -49,11 +54,12 @@ export async function GET(request) {
       return new Response(`Stored HTML with key: ${key}`, { status: 200 })
     }
 
+    // Return the HTML content if no history or storage needed
     return new Response(htmlContent, {
       headers: { 'Content-Type': 'text/html' },
     })
   } catch (error) {
-    console.error(error)
+    console.error('Error processing markdown:', error) // Log error details for debugging
     return new Response('Error processing markdown', { status: 500 })
   }
 }
@@ -61,11 +67,15 @@ export async function GET(request) {
 export async function POST(request) {
   const { markdown, css, store, customKey } = await request.json()
 
+  // Check if markdown is provided
   if (!markdown) {
     return new Response('No markdown provided', { status: 400 })
   }
 
+  console.log('Received markdown via POST:', markdown); // Log markdown content for debugging
+
   try {
+    // Attempt to convert markdown to HTML
     const htmlContent = await convertMarkdownToHtml(markdown, css)
 
     // If 'store' is true, store HTML to KV
@@ -77,26 +87,33 @@ export async function POST(request) {
       return new Response(`Stored HTML with key: ${key}`, { status: 200 })
     }
 
+    // Return the HTML content
     return new Response(htmlContent, {
       headers: { 'Content-Type': 'text/html' },
     })
   } catch (error) {
-    console.error(error)
+    console.error('Error processing markdown:', error) // Log error details for debugging
     return new Response('Error processing markdown', { status: 500 })
   }
 }
 
 async function convertMarkdownToHtml(markdown, css) {
-  const result = await remark().use(html).process(markdown)
-  const htmlContent = result.toString()
+  try {
+    // Process markdown to HTML using remark
+    const result = await remark().use(html).process(markdown)
+    const htmlContent = result.toString()
 
-  // If custom CSS is provided, wrap the HTML in a <style> tag
-  if (css) {
-    return `
-      <style>${css}</style>
-      <div class="markdown-body">${htmlContent}</div>
-    `
+    // If custom CSS is provided, wrap the HTML in a <style> tag
+    if (css) {
+      return `
+        <style>${css}</style>
+        <div class="markdown-body">${htmlContent}</div>
+      `
+    }
+
+    return `<div class="markdown-body">${htmlContent}</div>`
+  } catch (error) {
+    console.error("Error in markdown processing:", error) // Log any error in the conversion process
+    throw new Error("Error processing markdown")
   }
-
-  return `<div class="markdown-body">${htmlContent}</div>`
 }
