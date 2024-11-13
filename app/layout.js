@@ -16,7 +16,7 @@ export const metadata = {
     url: "https://your-site.com", // Replace with actual URL of your app
     images: [
       {
-        url: "/og-image.jpg", // Replace with your own Open Graph image
+        url: "/428a0bd3-ec00-4caa-be1c-a247728c5357.webp", // Replace with your own Open Graph image
         width: 800,
         height: 600,
         alt: "Markdown to HTML Converter App",
@@ -28,7 +28,7 @@ export const metadata = {
     site: "@saikothouse", // Replace with your Twitter handle
     title: "Markdown to HTML Converter",
     description: "Instantly convert Markdown to HTML with an optional CSS editor. Perfect for web developers and content creators.",
-    image: "/og-image.jpg", // Replace with your own Open Graph image
+    image: "/428a0bd3-ec00-4caa-be1c-a247728c5357.webp", // Replace with your own Open Graph image
   },
 };
 
