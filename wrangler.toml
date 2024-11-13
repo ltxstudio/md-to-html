@@ -82,6 +82,6 @@ id = "ebdb43ac0bdd46f1bd3015de295ababf"
 # [env.production.vars]
 # API_KEY = "abc123"
 
-# [[env.production.kv_namespaces]]
-# binding = "MY_KV_NAMESPACE"
-# id = "<PRODUCTION_NAMESPACE_ID>"
+[[env.production.kv_namespaces]]
+binding = "MY_KV_NAMESPACE"
+id = "a118c0384f6943b991c713b051387c58"
