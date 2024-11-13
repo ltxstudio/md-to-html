@@ -328,6 +328,115 @@ export default function Home() {
           </motion.button>
         </motion.div>
       </motion.div>
+      {/* Responsive History Section */}
+      <h2 className="text-2xl font-semibold mt-6">History</h2>
+      <div className="w-full mt-4 space-y-2">
+        {history.length > 0 ? (
+          history.map((entry, idx) => (
+            <motion.div
+              key={idx}
+              className="border-b p-2 flex flex-col space-y-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="font-semibold">Converted at {new Date(entry.timestamp).toLocaleString()}</div>
+              <div className="text-gray-600">
+                <strong>Markdown:</strong> {entry.markdown.slice(0, 50)}...
+              </div>
+              <div className="text-gray-600">
+                <strong>HTML:</strong> {entry.htmlContent.slice(0, 50)}...
+              </div>
+            </motion.div>
+          ))
+        ) : (
+          <div className="text-gray-600">No history available.</div>
+        )}
+      </div>
+
+      <motion.button
+        onClick={handleClearHistory}
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+        whileHover={{ scale: 1.1 }}
+      >
+        <FaTrashAlt className="inline mr-2" />
+        Clear History
+      </motion.button>
+
+      {/* About Section */}
+      <section className="w-full mt-12 max-w-4xl p-6 border bg-gray-100 rounded-md shadow-md">
+        <motion.h2
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          About This App
+        </motion.h2>
+        <motion.p
+          className="mt-4 text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7 }}
+        >
+          This Markdown-to-HTML converter was built to help developers and content creators quickly convert Markdown files into HTML format.
+        </motion.p>
+      </section>
+
+      {/* Features Section */}
+      <section className="w-full mt-12 max-w-4xl p-6 border bg-gray-100 rounded-md shadow-md">
+        <motion.h2
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          Features
+        </motion.h2>
+        <div className="mt-4 space-y-4">
+          <div className="flex items-center">
+            <FaRegLightbulb className="mr-2 text-yellow-500" />
+            <span>Real-time Markdown to HTML conversion.</span>
+          </div>
+          <div className="flex items-center">
+            <FaCheckCircle className="mr-2 text-green-500" />
+            <span>Save and store your converted HTML for future use.</span>
+          </div>
+          <div className="flex items-center">
+            <FaHistory className="mr-2 text-blue-500" />
+            <span>View your history of converted documents.</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="w-full mt-12 max-w-4xl p-6 border bg-gray-100 rounded-md shadow-md">
+        <motion.h2
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          FAQ
+        </motion.h2>
+        <div className="mt-4 space-y-4">
+          <div className="font-semibold">Q: What is Markdown?</div>
+          <div>A: Markdown is a lightweight markup language with plain-text formatting syntax that is designed to be converted to HTML.</div>
+
+          <div className="font-semibold">Q: How can I store my HTML?</div>
+          <div>A: You can store your HTML by checking the "Store HTML" checkbox and optionally providing a custom key.</div>
+        </div>
+      </section>
+
+      {/* Floating Telegram Button */}
+      <a
+        href="https://t.me/nullsrc"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
+      >
+        <FaTelegram size={30} />
+      </a>
     </div>
   );
 }
