@@ -1,5 +1,4 @@
 import { Inter, Poppins } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 // Load fonts
@@ -44,7 +43,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.className} ${poppins.className}`}>
         {children}
-      <GoogleAnalytics gaId="G-5QHHNQMCX2" />
       </body>
     </html>
   );
