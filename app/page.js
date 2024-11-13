@@ -1,73 +1,94 @@
 'use client';
 
-import { useState, useEffect } from 'react'
-import { marked } from 'marked'
-import { Highlight } from 'react-syntax-highlighter'
-import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs'
-import { FaCheckCircle, FaHistory, FaTrashAlt, FaRegQuestionCircle, FaRegLightbulb } from 'react-icons/fa'
-import { motion } from 'framer-motion'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
+import { useState, useEffect } from 'react';
+import { marked } from 'marked';
+import { Highlight } from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { FaCheckCircle, FaHistory, FaTrashAlt, FaRegQuestionCircle, FaRegLightbulb } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 export default function Home() {
-  const [markdown, setMarkdown] = useState('')
-  const [html, setHtml] = useState('')
-  const [css, setCss] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [store, setStore] = useState(false)
-  const [customKey, setCustomKey] = useState('')
-  const [history, setHistory] = useState([])
+  const [markdown, setMarkdown] = useState('');
+  const [html, setHtml] = useState('');
+  const [css, setCss] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [store, setStore] = useState(false);
+  const [customKey, setCustomKey] = useState('');
+  const [history, setHistory] = useState([]);
 
+  // Convert markdown to HTML using marked
   const handleConvert = async () => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError('');
     try {
-      const res = await fetch(`/api/convert?markdown=${encodeURIComponent(markdown)}&css=${encodeURIComponent(css)}&store=${store}&key=${customKey}&history=true`)
-      if (!res.ok) {
-        throw new Error('Failed to convert markdown')
+      // Convert markdown to HTML using marked
+      const htmlResult = marked(markdown);
+
+      // Optionally add custom CSS
+      if (css) {
+        setHtml(`
+          <style>${css}</style>
+          <div class="markdown-body">${htmlResult}</div>
+        `);
+      } else {
+        setHtml(`<div class="markdown-body">${htmlResult}</div>`);
       }
-      const historyData = await res.json()
-      setHistory(historyData)  // Update history list
-      const htmlResult = await res.text()
-      setHtml(htmlResult)
+
+      // Optionally store to history if needed
+      if (store) {
+        const res = await fetch(`/api/convert?markdown=${encodeURIComponent(markdown)}&css=${encodeURIComponent(css)}&store=true&key=${customKey}`, {
+          method: 'POST',
+        });
+        if (!res.ok) {
+          throw new Error('Failed to store HTML');
+        }
+        const historyData = await res.json();
+        setHistory(historyData);  // Update history list
+      }
+
     } catch (error) {
-      setError('Error converting markdown')
+      setError('Error converting markdown');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
+  // Clear all fields
   const handleClear = () => {
-    setMarkdown('')
-    setHtml('')
-    setCss('')
-    setStore(false)
-    setCustomKey('')
-    setError('')
-  }
+    setMarkdown('');
+    setHtml('');
+    setCss('');
+    setStore(false);
+    setCustomKey('');
+    setError('');
+  };
 
+  // Clear history from the backend
   const handleClearHistory = async () => {
     try {
-      const res = await fetch(`/api/convert?history=true`, { method: 'DELETE' })
+      const res = await fetch(`/api/convert?history=true`, { method: 'DELETE' });
       if (!res.ok) {
-        throw new Error('Failed to clear history')
+        throw new Error('Failed to clear history');
       }
-      setHistory([])  // Clear local history
+      setHistory([]);  // Clear local history
     } catch (error) {
-      setError('Error clearing history')
+      setError('Error clearing history');
     }
-  }
+  };
 
+  // Load history on component mount
   useEffect(() => {
     const loadHistory = async () => {
-      const res = await fetch('/api/convert?history=true')
+      const res = await fetch('/api/convert?history=true');
       if (res.ok) {
-        const historyData = await res.json()
-        setHistory(historyData)
+        const historyData = await res.json();
+        setHistory(historyData);
       }
-    }
-    loadHistory()
-  }, [])
+    };
+    loadHistory();
+  }, []);
 
   return (
     <div className="flex flex-col items-center p-6 space-y-4 max-w-5xl mx-auto">
@@ -273,5 +294,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-  )
+  );
 }
