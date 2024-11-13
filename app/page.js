@@ -8,6 +8,23 @@ import { FaCheckCircle, FaHistory, FaTrashAlt, FaRegQuestionCircle, FaRegLightbu
 import { motion } from 'framer-motion';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
+// Add Google Analytics script
+useEffect(() => {
+  const script = document.createElement('script');
+  script.src = `https://www.googletagmanager.com/gtag/js?id=G-5QHHNQMCX2`;
+  script.async = true;
+  document.head.appendChild(script);
+
+  script.onload = () => {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-5QHHNQMCX2');
+  };
+}, []);
+
 export default function Home() {
   const [markdown, setMarkdown] = useState('');
   const [html, setHtml] = useState('');
@@ -45,6 +62,12 @@ export default function Home() {
         const historyData = await res.json();
         setHistory(historyData);  // Update history list
       }
+
+      // Google Analytics - Track the conversion
+      window.gtag('event', 'conversion', {
+        event_category: 'Markdown to HTML',
+        event_label: 'HTML Conversion',
+      });
     } catch (error) {
       setError('Error converting markdown');
     } finally {
@@ -212,6 +235,7 @@ export default function Home() {
         Download HTML
       </motion.button>
 
+      {/* Responsive History Section */}
       <h2 className="text-2xl font-semibold mt-6">History</h2>
       <div className="w-full mt-4 space-y-2">
         {history.length > 0 ? (
