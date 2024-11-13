@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import { useState, useEffect } from 'react'
 import { marked } from 'marked'  // To convert Markdown to HTML for live preview
 import { Highlight } from 'react-syntax-highlighter'
