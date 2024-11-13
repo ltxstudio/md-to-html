@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { Highlight } from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { FaCheckCircle, FaHistory, FaTrashAlt, FaRegQuestionCircle, FaRegLightbulb, FaDownload } from 'react-icons/fa';
+import { FaCheckCircle, FaHistory, FaTrashAlt, FaRegQuestionCircle, FaRegLightbulb, FaDownload, FaTelegram } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -310,6 +310,16 @@ export default function Home() {
           <div>A: You can store your HTML by checking the "Store HTML" checkbox and optionally providing a custom key.</div>
         </div>
       </section>
+
+      {/* Floating Telegram Button */}
+      <a
+        href="https://t.me/nullsrc"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300"
+      >
+        <FaTelegram size={30} />
+      </a>
     </div>
   );
 }
