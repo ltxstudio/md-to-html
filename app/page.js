@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import { Highlight } from 'react-syntax-highlighter';
-import { docco, solarizedlight, github } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { FaCheckCircle, FaHistory, FaTrashAlt, FaRegQuestionCircle, FaRegLightbulb, FaDownload } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -17,7 +17,6 @@ export default function Home() {
   const [store, setStore] = useState(false);
   const [customKey, setCustomKey] = useState('');
   const [history, setHistory] = useState([]);
-  const [theme, setTheme] = useState('github'); // Theme for code highlighting
 
   // Convert markdown to HTML using marked
   const handleConvert = async () => {
@@ -25,7 +24,7 @@ export default function Home() {
     setError('');
     try {
       const htmlResult = marked(markdown);
-      
+
       // Optionally add custom CSS
       if (css) {
         setHtml(`
@@ -36,7 +35,6 @@ export default function Home() {
         setHtml(`<div class="markdown-body">${htmlResult}</div>`);
       }
 
-      // Optionally store to history if needed
       if (store) {
         const res = await fetch(`/api/convert?markdown=${encodeURIComponent(markdown)}&css=${encodeURIComponent(css)}&store=true&key=${customKey}`, {
           method: 'POST',
@@ -52,15 +50,6 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Save Markdown to .md file
-  const handleSaveMarkdown = () => {
-    const blob = new Blob([markdown], { type: 'text/markdown' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'converted.md';
-    link.click();
   };
 
   // Clear all fields
@@ -98,6 +87,15 @@ export default function Home() {
     loadHistory();
   }, []);
 
+  // Function to download HTML as a file
+  const handleDownload = () => {
+    const blob = new Blob([html], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'converted.html';
+    link.click();
+  };
+
   return (
     <div className="flex flex-col items-center p-6 space-y-4 max-w-5xl mx-auto">
       <motion.h1
@@ -120,6 +118,7 @@ export default function Home() {
         </motion.p>
       </section>
 
+      {/* Markdown Input */}
       <motion.textarea
         rows="8"
         className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -131,6 +130,7 @@ export default function Home() {
         transition={{ duration: 0.5 }}
       />
 
+      {/* CSS Input */}
       <motion.textarea
         rows="4"
         className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -163,19 +163,6 @@ export default function Home() {
         />
       </div>
 
-      <div className="flex items-center space-x-4">
-        <label className="text-sm">Syntax Highlighting Theme:</label>
-        <select
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          className="p-2 border rounded-md"
-        >
-          <option value="github">GitHub</option>
-          <option value="solarizedlight">Solarized Light</option>
-          <option value="docco">Docco</option>
-        </select>
-      </div>
-
       <div className="flex space-x-4">
         <motion.button
           onClick={handleConvert}
@@ -192,14 +179,6 @@ export default function Home() {
         >
           Clear
         </motion.button>
-        <motion.button
-          onClick={handleSaveMarkdown}
-          className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-          whileHover={{ scale: 1.1 }}
-        >
-          <FaDownload className="mr-2" />
-          Save Markdown
-        </motion.button>
       </div>
 
       {error && <div className="text-red-500">{error}</div>}
@@ -207,7 +186,7 @@ export default function Home() {
       <h2 className="text-2xl font-semibold mt-6">Converted HTML Preview</h2>
 
       <motion.div
-        className="w-full mt-4 p-4 border border-gray-300 rounded-md overflow-x-auto"
+        className="w-full mt-4 p-4 border border-gray-300 rounded-md overflow-auto"
         style={{ minHeight: '200px', whiteSpace: 'pre-wrap' }}
         dangerouslySetInnerHTML={{ __html: html }}
         initial={{ opacity: 0 }}
@@ -223,6 +202,15 @@ export default function Home() {
           Copy HTML to Clipboard
         </motion.button>
       </CopyToClipboard>
+
+      <motion.button
+        onClick={handleDownload}
+        className="mt-4 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
+        whileHover={{ scale: 1.1 }}
+      >
+        <FaDownload className="inline mr-2" />
+        Download HTML
+      </motion.button>
 
       <h2 className="text-2xl font-semibold mt-6">History</h2>
       <div className="w-full mt-4 space-y-2">
@@ -257,6 +245,71 @@ export default function Home() {
         <FaTrashAlt className="inline mr-2" />
         Clear History
       </motion.button>
+
+      {/* About Section */}
+      <section className="w-full mt-12 max-w-4xl p-6 border bg-gray-100 rounded-md shadow-md">
+        <motion.h2
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          About This App
+        </motion.h2>
+        <motion.p
+          className="mt-4 text-lg"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.7 }}
+        >
+          This Markdown-to-HTML converter was built to help developers and content creators quickly convert Markdown files into HTML format.
+        </motion.p>
+      </section>
+
+      {/* Features Section */}
+      <section className="w-full mt-12 max-w-4xl p-6 border bg-gray-100 rounded-md shadow-md">
+        <motion.h2
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          Features
+        </motion.h2>
+        <div className="mt-4 space-y-4">
+          <div className="flex items-center">
+            <FaRegLightbulb className="mr-2 text-yellow-500" />
+            <span>Real-time Markdown to HTML conversion.</span>
+          </div>
+          <div className="flex items-center">
+            <FaCheckCircle className="mr-2 text-green-500" />
+            <span>Save and store your converted HTML for future use.</span>
+          </div>
+          <div className="flex items-center">
+            <FaHistory className="mr-2 text-blue-500" />
+            <span>View your history of converted documents.</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="w-full mt-12 max-w-4xl p-6 border bg-gray-100 rounded-md shadow-md">
+        <motion.h2
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          FAQ
+        </motion.h2>
+        <div className="mt-4 space-y-4">
+          <div className="font-semibold">Q: What is Markdown?</div>
+          <div>A: Markdown is a lightweight markup language with plain-text formatting syntax that is designed to be converted to HTML.</div>
+
+          <div className="font-semibold">Q: How can I store my HTML?</div>
+          <div>A: You can store your HTML by checking the "Store HTML" checkbox and optionally providing a custom key.</div>
+        </div>
+      </section>
     </div>
   );
 }
